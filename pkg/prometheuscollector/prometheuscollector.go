@@ -7,8 +7,6 @@
 //	collector := prometheuscollector.New(handler.Metrics)
 //	prometheus.MustRegister(collector)
 
-//  attempt to add COMPUTERNAME env var to metrics
-
 package prometheuscollector
 
 import (
