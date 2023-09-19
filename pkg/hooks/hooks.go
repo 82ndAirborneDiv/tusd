@@ -149,7 +149,7 @@ var MetricsHookErrorsTotal = prometheus.NewCounterVec(
 		Name: "tusd_hook_errors_total",
 		Help: "Total number of execution errors per hook type.",
 	},
-	[]string{"hooktype","computername"},
+	[]string{"hooktype", "computername"},
 )
 
 var MetricsHookInvocationsTotal = prometheus.NewCounterVec(
@@ -157,24 +157,24 @@ var MetricsHookInvocationsTotal = prometheus.NewCounterVec(
 		Name: "tusd_hook_invocations_total",
 		Help: "Total number of invocations per hook type.",
 	},
-	[]string{"hooktype","computername"},
+	[]string{"hooktype", "computername"},
 )
 
 func SetupHookMetrics() {
 
 	computerName := os.Getenv("COMPUTERNAME")
-	MetricsHookErrorsTotal.WithLabelValues(string(HookPostFinish),computerName).Add(0)
-	MetricsHookErrorsTotal.WithLabelValues(string(HookPostTerminate),computerName).Add(0)
-	MetricsHookErrorsTotal.WithLabelValues(string(HookPostReceive),computerName).Add(0)
-	MetricsHookErrorsTotal.WithLabelValues(string(HookPostCreate),computerName).Add(0)
-	MetricsHookErrorsTotal.WithLabelValues(string(HookPreCreate),computerName).Add(0)
-	MetricsHookErrorsTotal.WithLabelValues(string(HookPreFinish),computerName).Add(0)
-	MetricsHookInvocationsTotal.WithLabelValues(string(HookPostFinish),computerName).Add(0)
-	MetricsHookInvocationsTotal.WithLabelValues(string(HookPostTerminate),computerName).Add(0)
-	MetricsHookInvocationsTotal.WithLabelValues(string(HookPostReceive),computerName).Add(0)
-	MetricsHookInvocationsTotal.WithLabelValues(string(HookPostCreate),computerName).Add(0)
-	MetricsHookInvocationsTotal.WithLabelValues(string(HookPreCreate),computerName).Add(0)
-	MetricsHookInvocationsTotal.WithLabelValues(string(HookPreFinish),computerName).Add(0)
+	MetricsHookErrorsTotal.WithLabelValues(string(HookPostFinish), computerName).Add(0)
+	MetricsHookErrorsTotal.WithLabelValues(string(HookPostTerminate), computerName).Add(0)
+	MetricsHookErrorsTotal.WithLabelValues(string(HookPostReceive), computerName).Add(0)
+	MetricsHookErrorsTotal.WithLabelValues(string(HookPostCreate), computerName).Add(0)
+	MetricsHookErrorsTotal.WithLabelValues(string(HookPreCreate), computerName).Add(0)
+	MetricsHookErrorsTotal.WithLabelValues(string(HookPreFinish), computerName).Add(0)
+	MetricsHookInvocationsTotal.WithLabelValues(string(HookPostFinish), computerName).Add(0)
+	MetricsHookInvocationsTotal.WithLabelValues(string(HookPostTerminate), computerName).Add(0)
+	MetricsHookInvocationsTotal.WithLabelValues(string(HookPostReceive), computerName).Add(0)
+	MetricsHookInvocationsTotal.WithLabelValues(string(HookPostCreate), computerName).Add(0)
+	MetricsHookInvocationsTotal.WithLabelValues(string(HookPreCreate), computerName).Add(0)
+	MetricsHookInvocationsTotal.WithLabelValues(string(HookPreFinish), computerName).Add(0)
 }
 
 func invokeHookAsync(typ HookType, event handler.HookEvent, hookHandler HookHandler) {

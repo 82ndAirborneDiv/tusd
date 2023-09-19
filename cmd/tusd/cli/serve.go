@@ -11,7 +11,7 @@ import (
 	"regexp"
 	"strings"
 	"syscall"
-
+	"github.com/prometheus/client_golang/prometheus"
 	tushandler "github.com/tus/tusd/v2/pkg/handler"
 	"github.com/tus/tusd/v2/pkg/hooks"
 	"github.com/tus/tusd/v2/pkg/hooks/plugin"
@@ -146,9 +146,9 @@ func Serve() {
 		ConnState: func(_ net.Conn, cs http.ConnState) {
 			switch cs {
 			case http.StateNew:
-				MetricsOpenConnections.Inc()
+				MetricsOpenConnections.With(prometheus.Labels{"computername": os.Getenv("COMPUTERNAME")}).Inc()
 			case http.StateClosed, http.StateHijacked:
-				MetricsOpenConnections.Dec()
+				MetricsOpenConnections.With(prometheus.Labels{"computername": os.Getenv("COMPUTERNAME")}).Dec()
 			}
 		},
 		BaseContext: func(_ net.Listener) context.Context {

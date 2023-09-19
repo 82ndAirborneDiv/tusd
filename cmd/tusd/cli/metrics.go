@@ -1,20 +1,21 @@
 package cli
 
 import (
-	"net/http"
-
 	"github.com/tus/tusd/v2/pkg/handler"
 	"github.com/tus/tusd/v2/pkg/hooks"
 	"github.com/tus/tusd/v2/pkg/prometheuscollector"
+	"net/http"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-var MetricsOpenConnections = prometheus.NewGauge(prometheus.GaugeOpts{
+var MetricsOpenConnections = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 	Name: "tusd_connections_open",
-	Help: "Current number of open connections.",
-})
+	Help: "Current number of open connections.",},
+	[]string{"computername"},
+	
+)
 
 func SetupMetrics(mux *http.ServeMux, handler *handler.Handler) {
 	prometheus.MustRegister(MetricsOpenConnections)
