@@ -6,42 +6,43 @@
 //	handler, err := handler.NewHandler(…)
 //	collector := prometheuscollector.New(handler.Metrics)
 //	prometheus.MustRegister(collector)
+
 package prometheuscollector
 
 import (
+	//	"github.com/google/uuid"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/tus/tusd/v2/pkg/handler"
+	"os"
 	"strconv"
 	"sync/atomic"
-
-	"github.com/tus/tusd/v2/pkg/handler"
-
-	"github.com/prometheus/client_golang/prometheus"
 )
 
 var (
 	requestsTotalDesc = prometheus.NewDesc(
 		"tusd_requests_total",
 		"Total number of requests served by tusd per method.",
-		[]string{"method"}, nil)
+		[]string{"method", "computername"}, nil)
 	errorsTotalDesc = prometheus.NewDesc(
 		"tusd_errors_total",
 		"Total number of errors per status.",
-		[]string{"status", "code"}, nil)
+		[]string{"status", "code", "computername"}, nil)
 	bytesReceivedDesc = prometheus.NewDesc(
 		"tusd_bytes_received",
 		"Number of bytes received for uploads.",
-		nil, nil)
+		[]string{"computername"}, nil)
 	uploadsCreatedDesc = prometheus.NewDesc(
 		"tusd_uploads_created",
 		"Number of created uploads.",
-		nil, nil)
+		[]string{"computername"}, nil)
 	uploadsFinishedDesc = prometheus.NewDesc(
 		"tusd_uploads_finished",
 		"Number of finished uploads.",
-		nil, nil)
+		[]string{"computername"}, nil)
 	uploadsTerminatedDesc = prometheus.NewDesc(
 		"tusd_uploads_terminated",
 		"Number of terminated uploads.",
-		nil, nil)
+		[]string{"computername"}, nil)
 )
 
 type Collector struct {
@@ -65,12 +66,15 @@ func (Collector) Describe(descs chan<- *prometheus.Desc) {
 }
 
 func (c Collector) Collect(metrics chan<- prometheus.Metric) {
+	computerName := os.Getenv("COMPUTERNAME")
+
 	for method, valuePtr := range c.metrics.RequestsTotal {
 		metrics <- prometheus.MustNewConstMetric(
 			requestsTotalDesc,
 			prometheus.CounterValue,
 			float64(atomic.LoadUint64(valuePtr)),
 			method,
+			computerName,
 		)
 	}
 
@@ -81,6 +85,7 @@ func (c Collector) Collect(metrics chan<- prometheus.Metric) {
 			float64(atomic.LoadUint64(valuePtr)),
 			strconv.Itoa(httpError.StatusCode),
 			httpError.ErrorCode,
+			computerName,
 		)
 	}
 
@@ -88,23 +93,27 @@ func (c Collector) Collect(metrics chan<- prometheus.Metric) {
 		bytesReceivedDesc,
 		prometheus.CounterValue,
 		float64(atomic.LoadUint64(c.metrics.BytesReceived)),
+		computerName,
 	)
 
 	metrics <- prometheus.MustNewConstMetric(
 		uploadsFinishedDesc,
 		prometheus.CounterValue,
 		float64(atomic.LoadUint64(c.metrics.UploadsFinished)),
+		computerName,
 	)
 
 	metrics <- prometheus.MustNewConstMetric(
 		uploadsCreatedDesc,
 		prometheus.CounterValue,
 		float64(atomic.LoadUint64(c.metrics.UploadsCreated)),
+		computerName,
 	)
 
 	metrics <- prometheus.MustNewConstMetric(
 		uploadsTerminatedDesc,
 		prometheus.CounterValue,
 		float64(atomic.LoadUint64(c.metrics.UploadsTerminated)),
+		computerName,
 	)
 }
